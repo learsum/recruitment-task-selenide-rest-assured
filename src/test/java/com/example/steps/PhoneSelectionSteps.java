@@ -1,46 +1,97 @@
 package com.example.steps;
 
+import com.example.pages.CartPage;
 import com.example.pages.MainPage;
-import io.cucumber.java.en.When;
+import com.example.pages.ProductListPage;
+import com.example.pages.ProductPage;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PhoneSelectionSteps {
     private static final Logger logger = LoggerFactory.getLogger(PhoneSelectionSteps.class);
     private final MainPage mainPage = new MainPage();
-    
-    @When("I open the browser")
-    public void openBrowser() {
-        logger.info("Browser configuration is handled by TestHooks");
-    }
-    
-    @Then("Browser is opened")
-    public void browserIsOpen() {
-        logger.info("Browser is ready for testing");
-    }
-    
+    private final ProductListPage productListPage = new ProductListPage();
+    private final ProductPage productPage = new ProductPage();
+    private final CartPage cartPage = new CartPage();
+    private String productUpfrontPrice;
+    private String productMonthlyPrice;
+
+
     @When("I navigate to {string}")
     public void openWebsite(String url) {
-        mainPage.open();
+        mainPage.open(url);
     }
-    
+
     @Then("Main page is visible")
     public void mainPageIsVisible() {
         assertTrue("Main page should be visible", mainPage.isMainPageVisible());
     }
-    
+
     @When("I click on {string} in the top menu")
     public void clickTopMenuItem(String menuItem) {
-        if (menuItem.equals("Urządzenia")) {
-            mainPage.clickDevicesMenu();
-        }
+        mainPage.clickMenuItem(menuItem);
     }
-    
+
     @Then("Dropdown menu is visible")
     public void dropdownMenuIsVisible() {
         assertTrue("Dropdown menu should be visible", mainPage.isDropdownVisible());
+    }
+
+    @When("I click {string} from {string} column")
+    public void clickSubmenuItem(String itemName, String columnName) {
+        mainPage.clickSubmenuItem(itemName, columnName);
+    }
+
+    @Then("Products list is visible")
+    public void productsListIsVisible() {
+        productListPage.isProductListVisible();
+    }
+
+    @When("I click first product from the list")
+    public void clickFirstProduct() {
+        productListPage.clickFirstProduct();
+    }
+
+    @Then("Product page is visible")
+    public void productPageIsVisible() {
+        assertTrue("Product page should be visible", productPage.isProductPageVisible());
+    }
+
+    @When("I add product to cart")
+    public void addProductToCart() {
+        productUpfrontPrice = productPage.getUpfrontPrice();
+        productMonthlyPrice = productPage.getMonthlyPrice();
+        productPage.addToCart();
+    }
+
+    @Then("Cart page is visible")
+    public void cartPageIsVisible() {
+        assertTrue("Cart page should be visible", cartPage.isCartPageVisible());
+    }
+
+    @Then("Cart prices match product prices")
+    public void cartPricesMatchProductPrices() {
+        cartPage.expandPriceDetails();
+        String cartUpfrontPrice = cartPage.getUpfrontPrice();
+        String cartMonthlyPrice = cartPage.getMonthlyPrice();
+
+        assertEquals("Upfront price should match", productUpfrontPrice, cartUpfrontPrice);
+        assertEquals("Monthly price should match", productMonthlyPrice, cartMonthlyPrice);
+    }
+
+    @When("I go to T-Mobile home page")
+    public void goToHomePage() {
+        mainPage.goToHomePage();
+    }
+
+    @Then("Main page is visible with cart icon showing products")
+    public void mainPageVisibleWithCart() {
+        assertTrue("Main page should be visible with cart icon showing products",
+        mainPage.isMainPageVisibleWithCart());
     }
 } 

@@ -6,35 +6,32 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
 public class MainPage extends BasePage {
-    private static final String MAIN_LOGO = "#logo-svg";
-    private static final String ACCEPT_COOKIES_BUTTON = "#didomi-notice-agree-button";
-    private static final String DEVICES_MENU = "//span[text()='Urządzenia']";
-    private static final String DEVICES_DROPDOWN = ".dropdown-menu";
+    private static final String SLICK_TRACK = ".slick-track";
+    private static final String CART_ICON = "a[title='Koszyk']";
+    private static final String CART_COUNTER = "a[title='Koszyk'] div[class*='rounded-full']";
+    private static final String HOME_LOGO = "a.logoWrap";
     
-    public MainPage open() {
+    public MainPage open(String url) {
         logger.info("Opening T-Mobile main page");
-        Selenide.open("https://www.t-mobile.pl/");
+        Selenide.open(url);
         acceptCookies();
         return this;
     }
-    
-    private void acceptCookies() {
-        logger.info("Accepting cookies");
-        $(ACCEPT_COOKIES_BUTTON).shouldBe(visible).click();
-    }
-    
-    public void clickDevicesMenu() {
-        logger.info("Clicking on Devices menu");
-        $x(DEVICES_MENU).shouldBe(visible).click();
-    }
-    
-    public boolean isDropdownVisible() {
-        logger.info("Checking if dropdown menu is visible");
-        return $(DEVICES_DROPDOWN).shouldBe(visible).isDisplayed();
-    }
-    
+
     public boolean isMainPageVisible() {
         logger.info("Checking if main page is visible");
-        return $(MAIN_LOGO).shouldBe(visible).isDisplayed();
+        return $(SLICK_TRACK).shouldBe(visible).isDisplayed();
+    }
+
+    public void goToHomePage() {
+        logger.info("Going to T-Mobile home page");
+        $(HOME_LOGO).shouldBe(visible).click();
+    }
+
+    public boolean isMainPageVisibleWithCart() {
+        logger.info("Checking if main page is visible with cart icon");
+        return isMainPageVisible() &&
+               $(CART_ICON).shouldBe(visible).isDisplayed() &&
+               $(CART_COUNTER).shouldBe(visible).getText().equals("1");
     }
 } 
