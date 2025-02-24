@@ -3,7 +3,7 @@ pipeline {
     
     tools {
         maven 'Maven 3.8.6'
-        jdk 'JDK 11'
+        jdk 'JDK 21'
     }
     
     parameters {
@@ -18,23 +18,36 @@ pipeline {
             }
         }
         
-        stage('Clean') {
+        stage('Build') {
             steps {
-                sh 'mvn clean'
+                sh 'mvn clean compile -Dmaven.compiler.release=21'
             }
         }
         
-        stage('Run Tests') {
+        stage('API Tests') {
             steps {
-                script {
-                    try {
-                        sh """
-                            mvn test -Dselenide.browser=${params.BROWSER} \
-                            ${params.TAGS ? "-Dcucumber.filter.tags=\\"${params.TAGS}\\"" : ''}
-                        """
-                    } finally {
-                        sh 'mvn verify -DskipTests'
-                    }
+                sh 'mvn test -Dtest=com.example.api.RunApiTests -Dmaven.compiler.release=21'
+            }
+            post {
+                always {
+                    cucumber buildStatus: 'UNSTABLE',
+                        reportTitle: 'API Test Report',
+                        fileIncludePattern: '**/cucumber-reports/api/*.json',
+                        trendsLimit: 10
+                }
+            }
+        }
+        
+        stage('Web Tests') {
+            steps {
+                sh 'mvn test -Dtest=com.example.web.RunWebTests -Dmaven.compiler.release=21 -Dbrowser.headless=true -Djenkins.build=true'
+            }
+            post {
+                always {
+                    cucumber buildStatus: 'UNSTABLE',
+                        reportTitle: 'Web Test Report',
+                        fileIncludePattern: '**/cucumber-reports/web/*.json',
+                        trendsLimit: 10
                 }
             }
         }
@@ -42,31 +55,21 @@ pipeline {
     
     post {
         always {
-            // Publikowanie raportów Cucumber
-            cucumber buildStatus: 'UNSTABLE',
-                    reportTitle: 'Cucumber Report',
-                    fileIncludePattern: '**/cucumber.json',
-                    trendsLimit: 10,
-                    classifications: [
-                        [
-                            'key': 'Browser',
-                            'value': "${params.BROWSER}"
-                        ]
-                    ]
+            // Publikuj raporty JUnit
+            junit '**/target/cucumber-reports/**/*.xml'
             
-            // Archiwizacja raportów HTML
-            archiveArtifacts artifacts: 'target/cucumber-reports/**/*', fingerprint: true
+            // Archiwizuj raporty i logi
+            archiveArtifacts artifacts: '**/target/cucumber-reports/**/*', 
+                           fingerprint: true, 
+                           allowEmptyArchive: true
             
-            // Czyszczenie workspace
+            // Wyślij maila z wynikami
+            emailext body: '${DEFAULT_CONTENT}',
+                     subject: '${DEFAULT_SUBJECT}',
+                     to: '${DEFAULT_RECIPIENTS}'
+            
+            // Wyczyść workspace
             cleanWs()
-        }
-        
-        success {
-            echo 'Testy zakończone sukcesem!'
-        }
-        
-        failure {
-            echo 'Testy zakończone niepowodzeniem!'
         }
     }
 } 

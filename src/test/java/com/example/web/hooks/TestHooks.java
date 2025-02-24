@@ -21,12 +21,19 @@ public class TestHooks implements ConcurrentEventListener {
     public void setUp(Scenario scenario) {
         logger.info("Starting scenario: {}", scenario.getName());
         logger.info("Initializing test configuration");
+        
+        boolean isJenkinsBuild = Boolean.parseBoolean(System.getProperty("jenkins.build", "false"));
+        boolean isHeadless = Boolean.parseBoolean(System.getProperty("browser.headless", "false"));
+        
         Configuration.browser = "chrome";
-        Configuration.browserSize = "2560x1440";
-        Configuration.timeout = 10000;
-        Configuration.browserVersion = "latest";
-        Configuration.headless = false;
-        Configuration.reportsFolder = "target/selenide-reports";
+        Configuration.browserSize = isJenkinsBuild ? "1920x1080" : "2560x1440";
+        Configuration.timeout = isJenkinsBuild ? 20000 : 10000;
+        Configuration.headless = isHeadless;
+        Configuration.reportsFolder = "target/selenide-reports/" + 
+            (isJenkinsBuild ? scenario.getName() : "");
+        
+        logger.info("Browser configuration: headless={}, size={}", 
+            Configuration.headless, Configuration.browserSize);
     }
 
     @Override
