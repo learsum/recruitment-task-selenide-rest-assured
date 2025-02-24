@@ -75,8 +75,8 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -145,8 +145,8 @@
                 <version>3.0.0</version>
                 <configuration>
                     <includes>
-                        <include>**/RunApiTests.java</include>
-                        <include>**/RunWebTests.java</include>
+                        <include>**/RunApiTests.class</include>
+                        <include>**/RunWebTests.class</include>
                     </includes>
                     <systemPropertyVariables>
                         <cucumber.publish.quiet>true</cucumber.publish.quiet>
@@ -181,6 +181,8 @@
                 </executions>
             </plugin>
         </plugins>
+        
+        <!-- Dodajmy jawną konfigurację resources -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
