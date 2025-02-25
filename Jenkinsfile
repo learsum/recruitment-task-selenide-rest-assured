@@ -41,7 +41,7 @@ pipeline {
         
         stage('Web Tests') {
             steps {
-                bat 'mvn test -Dtest=com.example.runners.RunWebTests -Dmaven.compiler.release=21 -Dbrowser.headless=true -Djenkins.build=true'
+                bat 'mvn test -Dtest=com.example.runners.RunWebTests -Dmaven.compiler.release=21 -Dbrowser.headless=false -Djenkins.build=true'
             }
             post {
                 always {
