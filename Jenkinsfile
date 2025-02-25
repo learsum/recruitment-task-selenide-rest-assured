@@ -14,19 +14,20 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git url: 'https://github.com/user/repo.git', branch: 'main'
+
             }
         }
         
         stage('Build') {
             steps {
-                sh 'mvn clean compile -Dmaven.compiler.release=21'
+                bat 'mvn clean compile -Dmaven.compiler.release=21'
             }
         }
         
         stage('API Tests') {
             steps {
-                sh 'mvn test -Dtest=com.example.api.RunApiTests -Dmaven.compiler.release=21'
+                bat 'mvn test -Dtest=com.example.api.RunApiTests -Dmaven.compiler.release=21'
             }
             post {
                 always {
@@ -40,7 +41,7 @@ pipeline {
         
         stage('Web Tests') {
             steps {
-                sh 'mvn test -Dtest=com.example.web.RunWebTests -Dmaven.compiler.release=21 -Dbrowser.headless=true -Djenkins.build=true'
+                bat 'mvn test -Dtest=com.example.web.RunWebTests -Dmaven.compiler.release=21 -Dbrowser.headless=true -Djenkins.build=true'
             }
             post {
                 always {

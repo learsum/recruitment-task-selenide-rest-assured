@@ -9,8 +9,6 @@ Framework do automatyzacji testów API i Web, wykorzystujący:
 
 ## Uruchamianie testów
 
-### Wszystkie testy
-
 mvn clean test
 
 ### Testy API
