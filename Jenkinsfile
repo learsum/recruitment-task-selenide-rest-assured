@@ -63,12 +63,7 @@ pipeline {
             archiveArtifacts artifacts: '**/target/cucumber-reports/**/*', 
                            fingerprint: true, 
                            allowEmptyArchive: true
-            
-            // Wyślij maila z wynikami
-            emailext body: '${DEFAULT_CONTENT}',
-                     subject: '${DEFAULT_SUBJECT}',
-                     to: '${DEFAULT_RECIPIENTS}'
-            
+
             // Wyczyść workspace
             cleanWs()
         }
