@@ -1,5 +1,6 @@
 package com.example.web.pages;
 
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 
 import static com.codeborne.selenide.Condition.visible;
@@ -14,7 +15,9 @@ public class MainPage extends BasePage {
     public MainPage open(String url) {
         logger.info("Opening T-Mobile main page");
         Selenide.open(url);
-        acceptCookies();
+        if (!Configuration.headless){
+            acceptCookies();
+        }
         return this;
     }
 
