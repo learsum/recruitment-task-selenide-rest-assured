@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/user/repo.git', branch: 'main'
+                git url: 'https://github.com/learsum/recruitment-task-selenide-rest-assured.git', branch: 'main'
 
             }
         }
