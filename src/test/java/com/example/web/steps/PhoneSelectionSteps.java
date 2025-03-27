@@ -4,6 +4,7 @@ import com.example.web.pages.CartPage;
 import com.example.web.pages.MainPage;
 import com.example.web.pages.ProductListPage;
 import com.example.web.pages.ProductPage;
+import com.example.web.session.SessionContext;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.slf4j.Logger;
@@ -18,9 +19,7 @@ public class PhoneSelectionSteps {
     private final ProductListPage productListPage = new ProductListPage();
     private final ProductPage productPage = new ProductPage();
     private final CartPage cartPage = new CartPage();
-    private String productUpfrontPrice;
-    private String productMonthlyPrice;
-
+    private final SessionContext sessionContext = SessionContext.getInstance();
 
     @When("I navigate to {string}")
     public void openWebsite(String url) {
@@ -64,8 +63,13 @@ public class PhoneSelectionSteps {
 
     @When("I add product to cart")
     public void addProductToCart() {
-        productUpfrontPrice = productPage.getUpfrontPrice();
-        productMonthlyPrice = productPage.getMonthlyPrice();
+        String productUpfrontPrice = productPage.getUpfrontPrice();
+        String productMonthlyPrice = productPage.getMonthlyPrice();
+        
+        // Store prices in session context
+        sessionContext.setValue("productUpfrontPrice", productUpfrontPrice);
+        sessionContext.setValue("productMonthlyPrice", productMonthlyPrice);
+        
         productPage.addToCart();
     }
 
@@ -79,6 +83,10 @@ public class PhoneSelectionSteps {
         cartPage.expandPriceDetails();
         String cartUpfrontPrice = cartPage.getUpfrontPrice();
         String cartMonthlyPrice = cartPage.getMonthlyPrice();
+
+        // Retrieve prices from session context
+        String productUpfrontPrice = sessionContext.getValue("productUpfrontPrice");
+        String productMonthlyPrice = sessionContext.getValue("productMonthlyPrice");
 
         assertEquals("Upfront price should match", productUpfrontPrice, cartUpfrontPrice);
         assertEquals("Monthly price should match", productMonthlyPrice, cartMonthlyPrice);

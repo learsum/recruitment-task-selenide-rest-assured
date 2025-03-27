@@ -8,7 +8,7 @@ pipeline {
     
     parameters {
         choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: 'Wybierz przeglądarkę')
-        string(name: 'TAGS', defaultValue: '', description: 'Tagi Cucumber (np. @smoke)')
+        string(name: 'TAGS', defaultValue: '', description: 'Tagi Cucumber (np. @web, @api)')
     }
     
     stages {
